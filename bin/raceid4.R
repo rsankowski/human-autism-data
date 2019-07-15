@@ -15,14 +15,14 @@ counts <- readMM("data/matrix.mtx")
 genes <- read_tsv("data/genes.tsv", col_names = F)
 meta <- read_tsv("data/meta.txt")
 dimnames(aut_counts) = list(genes,meta$cell)
-micr <- which(meta$cluster == "Microglia" & meta$diagnosis == "Control")
+micr <- which(meta$cluster == "Microglia") # & meta$diagnosis == "Control"
 micr_counts <- Matrix(as.matrix(counts[,micr]), sparse = T)
 dimnames(micr_counts) <- list(genes$X2, meta$cell[micr])
 
 
-save(micr_counts, file = "data/velmeshev_countsseq-microglia.Robj")
+save(micr_counts, file = "data/velmeshev_counts_nuc_seq-microglia.Robj")
 
-load("data/velmeshev_countsseq-microglia.Robj")
+load("data/velmeshev_counts_nuc_seq-microglia.Robj")
 
 prdata <- micr_counts
 
@@ -48,7 +48,7 @@ plotsaturation(sc,disp=FALSE)
 plotsaturation(sc,disp=TRUE)
 plotjaccard(sc)
 
-sc <- clustexp(sc,cln=18,sat=FALSE) 
+sc <- clustexp(sc,cln=11,sat=FALSE) 
 sc <- findoutliers(sc)
 plotbackground(sc)
 plotsensitivity(sc)
@@ -89,6 +89,7 @@ plotexpmap(sc,name2id("P2RY12", rownames(sc@ndata)),logsc=F,fr=F)
 plotexpmap(sc,name2id("SLC2A5", rownames(sc@ndata)),logsc=F,fr=F)
 plotexpmap(sc,name2id("^EGR1", rownames(sc@ndata)),logsc=F,fr=F)
 plotexpmap(sc,name2id("JUN", rownames(sc@ndata)),logsc=F,fr=F)
+plotexpmap(sc,name2id("GPR34", rownames(sc@ndata)),logsc=F,fr=F)
 
 dg <- clustdiffgenes(sc,4,pvalue=.01)
 head(dg,25)
@@ -99,5 +100,4 @@ plotmarkergenes(sc,genes,samples=types)
 #Save sc file
 save(sc, file = 'data/sc.Robj')
 
-micr_ids <- names(sc@cpart)[!sc@cpart %in% c(7,18,17)]
-write_csv(as.data.frame(micr_ids), "data/microglia-cell-ids.csv")
+#write_csv(as.data.frame(micr_ids), "data/microglia-cell-ids.csv")
